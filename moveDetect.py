@@ -52,7 +52,6 @@ while True:
             single_event[1] = datetime.now()
             events.append (single_event)           
         break
-print(events)
 video.release()
 cv2.destroyAllWindows()
 
