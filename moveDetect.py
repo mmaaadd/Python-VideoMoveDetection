@@ -1,4 +1,4 @@
-import cv2, time
+import cv2
 
 video = cv2.VideoCapture(0)
 
