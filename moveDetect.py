@@ -11,8 +11,8 @@ first_frame = cv2.GaussianBlur(first_frame, (21,21),0)
 status = 0 #variable to store motion det. status
 single_event = []
 events = []
-df = pandas.DataFrame(columns=["Start","End"])
-
+df = pandas.DataFrame(columns=["Start","End", "MaxFrameSize"])
+max_cont_size = 0
 
 while True:
     check, frame = video.read ()
@@ -30,13 +30,17 @@ while True:
             (x,y,w,h) = cv2.boundingRect(contour)
             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
             number_of_contours = number_of_contours + 1
+            if max_cont_size < cv2.contourArea(contour): max_cont_size = cv2.contourArea(contour)
+        print (str(max_cont_size) + " : " + str(cv2.contourArea(contour)))
     if number_of_contours > 0:
         if status == 0:
-            single_event = [datetime.now(), None]
+            single_event = [datetime.now(), None, None]
         status = 1
     else:
         if status == 1:
             single_event[1] = datetime.now()
+            single_event[2] = max_cont_size
+            max_cont_size = 0
             events.append (single_event)
         status = 0
 
@@ -55,5 +59,5 @@ while True:
 video.release()
 cv2.destroyAllWindows()
 
-df = pandas.DataFrame(events, columns = ['Start','End'])
+df = pandas.DataFrame(events, columns = ['Start','End', "MaxFrameSize"])
 df.to_csv("motion.csv")
